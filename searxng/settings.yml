@@ -1,0 +1,9 @@
+use_default_settings: true
+server:
+  secret_key: "startupscraper_secret_key"
+  bind_address: "0.0.0.0"
+  port: 8080
+search:
+  formats:
+    - html
+    - json

@@ -1,0 +1,31 @@
+{
+  "name": "startup-scraper",
+  "version": "1.0.0",
+  "description": "Open-source CLI tool that automates job scraping via Google dorking (Boolean search targeting ATS platforms) and delivers daily digests as Markdown or email.",
+  "main": "dist/index.js",
+  "bin": {
+    "startup-scraper": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "dry-run": "tsx src/index.ts --dry-run",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["job-scraper", "google-dorking", "ats", "job-search", "cli"],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "resend": "^6.14.0",
+    "typescript": "^6.0.3",
+    "yaml": "^2.9.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "tsx": "^4.22.4"
+  }
+}

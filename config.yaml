@@ -1,0 +1,76 @@
+# ============================================
+# StartupScraper Configuration
+# ============================================
+# Customize your job search filters below.
+# See README.md for detailed documentation.
+
+search:
+  # Search engine to use: "searxng" or "serper"
+  engine: "searxng"
+  
+  # URL to your local SearXNG instance (used if engine is "searxng")
+  searxng_url: "http://localhost:8080"
+
+  # Job title keywords (combined with OR in search queries)
+  keywords:
+    - "Software Engineer"
+    - "Software Developer"
+    - "Frontend Engineer"
+    - "iOS Engineer"
+    - "Full Stack Engineer"
+
+  # Seniority-level terms to INCLUDE (Tier 1 only, combined with OR)
+  seniority:
+    - "Junior"
+    - "Associate"
+    - "Entry Level"
+    - "New Grad"
+    - "I"
+
+  # Location terms (Tier 1 only, combined with OR)
+  # Leave empty for US-wide results
+  locations:
+    - "Remote"
+    - "New York"
+    - "NYC"
+    - "San Francisco"
+    - "SF"
+
+  # Terms to EXCLUDE from all results
+  excluded:
+    - "Senior"
+    - "Staff"
+    - "Principal"
+    - "Lead"
+    - "Manager"
+    - "Director"
+    - "VP"
+
+  # ATS platform domains to target (each becomes a site: query)
+  domains:
+    - jobs.ashbyhq.com
+    - boards.greenhouse.io
+    - jobs.lever.co
+    - careers.icims.com
+    - jobs.jobvite.com
+    - wd1.myworkdayjobs.com
+    - jobs.bamboohr.com
+    - jobs.smartrecruiters.com
+    - apply.jazz.co
+    - careers.workable.com
+
+# Output settings
+output:
+  # "markdown" | "email" | "both"
+  mode: "both"
+
+  # Directory for markdown digest files
+  markdown_dir: "./output"
+
+  # Email recipient for digest delivery
+  email_to: "your-email@example.com"
+
+# Tier configuration
+tiers:
+  # Maximum results to fetch per tier (across all domains)
+  max_results_per_tier: 30
