@@ -1,4 +1,4 @@
-# 🔍 StartupScraper
+# StartupScraper
 
 A command-line tool that automates job hunting. It uses Google Dorking (advanced search operators) to scrape job boards like Greenhouse, Lever, and Ashby, and delivers a clean daily digest of **new** jobs directly to you.
 
@@ -6,7 +6,7 @@ It's entirely free to run. It uses [SearXNG](https://github.com/searxng/searxng)
 
 ---
 
-## ✨ Core Features
+## Core Features
 
 * **Smart Deduplication**: Automatically tracks which jobs you've already seen. It saves state locally in `data/sent-jobs.json` so you never get pinged for the same job twice. Old records are auto-pruned after 30 days.
 * **Tiered Prioritization**: Groups results into Tier 1 (exact keyword + seniority + location match) and Tier 2 (broader keyword matches).
@@ -15,7 +15,7 @@ It's entirely free to run. It uses [SearXNG](https://github.com/searxng/searxng)
 
 ---
 
-## 🚀 Getting Started (5 Minutes)
+## Getting Started
 
 You need **Node.js** (v18+) and **Docker** installed.
 
@@ -26,7 +26,7 @@ cd StartupScraper
 npm install
 ```
 
-### 2. Run the Scraper (All-in-One)
+### 2. Run the Scraper
 ```bash
 # This automatically starts Docker, runs the scraper, saves the markdown file, and stops Docker.
 npm run scrape
@@ -35,7 +35,7 @@ The results will be saved to an `output/` folder as a clean Markdown file.
 
 ---
 
-## ⚙️ Customizing Your Job Search
+## Customizing Your Job Search
 
 All your search preferences live in **`config.yaml`**. Open it up to configure exactly what you're looking for:
 
@@ -62,7 +62,7 @@ StartupScraper organizes results into two tiers:
 
 ---
 
-## 📧 Setting Up Email Digests (Optional)
+## Setting Up Email Digests (Optional)
 
 By default, jobs are saved as Markdown files. If you want them emailed to you automatically:
 
@@ -76,7 +76,7 @@ By default, jobs are saved as Markdown files. If you want them emailed to you au
 
 ---
 
-## 🔄 Automating with Cron (Daily Digests)
+## Automating with Cron (Daily Digests)
 
 You probably want this to run every morning automatically. 
 
@@ -92,7 +92,7 @@ Add this line to run the scraper every day at 8:00 AM:
 
 ---
 
-## 📋 Supported Job Boards
+## Supported Job Boards
 
 StartupScraper targets these Applicant Tracking Systems (ATS) out of the box:
 * Ashby (`jobs.ashbyhq.com`)
@@ -106,5 +106,5 @@ You can easily add more by editing the `domains` list in `config.yaml`.
 
 ---
 
-## 📝 License
+## License
 MIT License.
