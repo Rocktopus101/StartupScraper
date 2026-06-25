@@ -6,6 +6,15 @@ It's entirely free to run. It uses [SearXNG](https://github.com/searxng/searxng)
 
 ---
 
+## ✨ Core Features
+
+* **Smart Deduplication**: Automatically tracks which jobs you've already seen. It saves state locally in `data/sent-jobs.json` so you never get pinged for the same job twice. Old records are auto-pruned after 30 days.
+* **Tiered Prioritization**: Groups results into Tier 1 (exact keyword + seniority + location match) and Tier 2 (broader keyword matches).
+* **Zero-Cost Scraping**: Uses a self-hosted SearXNG Docker container by default, completely bypassing Google API limits or rate-blocking.
+* **Tracking Stripper**: Automatically strips tracking parameters (`utm_source`, `gh_jid`, etc.) from URLs before deduplicating, preventing duplicate jobs that have different referral codes.
+
+---
+
 ## 🚀 Getting Started (5 Minutes)
 
 You need **Node.js** (v18+) and **Docker** installed.
