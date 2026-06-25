@@ -17,19 +17,10 @@ cd StartupScraper
 npm install
 ```
 
-### 2. Start the Search Engine
-We use a local Docker container for unlimited, free searches.
+### 2. Run the Scraper (All-in-One)
 ```bash
-docker compose up -d
-```
-
-### 3. Run Your First Search
-```bash
-# Preview the search queries (doesn't actually search)
-npm run dry-run
-
-# Run the actual scraper!
-npm start
+# This automatically starts Docker, runs the scraper, saves the markdown file, and stops Docker.
+npm run scrape
 ```
 The results will be saved to an `output/` folder as a clean Markdown file.
 

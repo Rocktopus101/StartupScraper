@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "scrape": "docker compose up -d && sleep 2 && node dist/index.js; docker compose down",
     "dev": "tsx src/index.ts",
     "dry-run": "tsx src/index.ts --dry-run",
     "clean": "rm -rf dist"
