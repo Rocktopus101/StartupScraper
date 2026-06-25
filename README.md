@@ -12,7 +12,7 @@ You need **Node.js** (v18+) and **Docker** installed.
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/your-username/StartupScraper.git
+git clone https://github.com/Rocktopus101/StartupScraper.git
 cd StartupScraper
 npm install
 ```
