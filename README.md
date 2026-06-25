@@ -86,7 +86,7 @@ crontab -e
 ```
 Add this line to run the scraper every day at 8:00 AM:
 ```bash
-0 8 * * * cd /path/to/StartupScraper && /usr/local/bin/npm start >> /tmp/startup-scraper.log 2>&1
+0 8 * * * cd /path/to/StartupScraper && /usr/local/bin/npm run scrape >> /tmp/startup-scraper.log 2>&1
 ```
 *(Make sure to replace `/path/to/StartupScraper` with the actual path on your machine).*
 
