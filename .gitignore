@@ -11,7 +11,7 @@ dist/
 data/sent-jobs.json
 
 # Generated digests (personal data)
-output/
+/output/
 
 # OS files
 .DS_Store

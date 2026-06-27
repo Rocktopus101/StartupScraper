@@ -1,0 +1,183 @@
+// ============================================
+// StartupScraper — Markdown Digest Generator
+// ============================================
+// Generates a clean, tiered Markdown digest file
+// from scraped job results grouped by ATS domain.
+
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import type { TieredResults, Job } from "../types.js";
+
+// ── Domain prettification map ──────────────────────────────────
+
+const DOMAIN_LABELS: Record<string, string> = {
+  "jobs.ashbyhq.com": "Ashby HQ",
+  "boards.greenhouse.io": "Greenhouse",
+  "jobs.lever.co": "Lever",
+  "careers.icims.com": "iCIMS",
+  "jobs.jobvite.com": "Jobvite",
+  "wd1.myworkdayjobs.com": "Workday",
+  "jobs.bamboohr.com": "BambooHR",
+  "jobs.smartrecruiters.com": "SmartRecruiters",
+  "apply.jazz.co": "JazzHR",
+  "careers.workable.com": "Workable",
+};
+
+/**
+ * Convert a raw ATS domain into a human-readable label.
+ *
+ * Known domains are mapped to their brand names (e.g. `jobs.ashbyhq.com` → `Ashby HQ`).
+ * Unknown domains fall back to title-casing the first subdomain segment.
+ */
+export function prettifyDomain(domain: string): string {
+  if (DOMAIN_LABELS[domain]) {
+    return DOMAIN_LABELS[domain];
+  }
+
+  // Fallback: title-case the first segment of the domain
+  const firstSegment = domain.split(".")[0] ?? domain;
+  return firstSegment.charAt(0).toUpperCase() + firstSegment.slice(1);
+}
+
+// ── Helpers ────────────────────────────────────────────────────
+
+/** Group an array of jobs by their `domain` property. */
+function groupByDomain(jobs: Job[]): Map<string, Job[]> {
+  const map = new Map<string, Job[]>();
+  for (const job of jobs) {
+    const key = job.domain ?? "unknown";
+    const existing = map.get(key);
+    if (existing) {
+      existing.push(job);
+    } else {
+      map.set(key, [job]);
+    }
+  }
+  return map;
+}
+
+/** Render a grouped domain section as Markdown checkbox lists. */
+function renderDomainLists(jobs: Job[]): string {
+  const grouped = groupByDomain(jobs);
+  const sections: string[] = [];
+
+  for (const [domain, domainJobs] of grouped) {
+    const lines: string[] = [];
+    lines.push(`### ${prettifyDomain(domain)}`);
+    lines.push("");
+
+    domainJobs.forEach((job) => {
+      lines.push(`- [ ] [${job.title}](${job.link})`);
+    });
+
+    lines.push("");
+    sections.push(lines.join("\n"));
+  }
+
+  return sections.join("\n");
+}
+
+// ── Main export ────────────────────────────────────────────────
+
+/**
+ * Generate a Markdown digest from tiered job results and write it to disk.
+ *
+ * @param results - The tiered (Tier 1 + Tier 2) job results to render.
+ * @param outputDir - Directory where the digest `.md` file will be saved.
+ * @returns The absolute path of the written Markdown file.
+ */
+export function generateMarkdown(
+  results: TieredResults,
+  outputDir: string,
+): string {
+  // Ensure output directory exists
+  mkdirSync(outputDir, { recursive: true });
+
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0]; // e.g. 2026-06-25
+  const prettyDate = now.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+  const timeStr = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const tier1Count = results.tier1.length;
+  const tier2Count = results.tier2.length;
+  const totalCount = tier1Count + tier2Count;
+
+  // ── Build Markdown content ───────────────────────────────────
+
+  const lines: string[] = [];
+
+  lines.push(`# 🔍 StartupScraper Digest — ${prettyDate}`);
+  lines.push("");
+  lines.push(
+    `> Found **${totalCount} active jobs** (${tier1Count} Tier 1, ${tier2Count} Tier 2)  `,
+  );
+  lines.push(`> Generated at ${timeStr}`);
+  lines.push("");
+  lines.push(
+    "💡 **Pro Tip:** Check off a job like `- [x]` when you're done with it. Unchecked jobs `- [ ]` will automatically roll over to your next daily digest!"
+  );
+  lines.push("");
+  lines.push("---");
+  lines.push("");
+
+  // Tier 1
+  lines.push("## 🎯 Tier 1 — Exact Matches");
+  lines.push("");
+  lines.push(
+    "These jobs match your specific keywords, seniority level, and location filters.",
+  );
+  lines.push("");
+
+  if (tier1Count === 0) {
+    lines.push(
+      "_No results in this tier. Try broadening your keywords or locations._",
+    );
+    lines.push("");
+  } else {
+    lines.push(renderDomainLists(results.tier1));
+  }
+
+  lines.push("---");
+  lines.push("");
+
+  // Tier 2
+  lines.push("## 🌐 Tier 2 — Broader Matches");
+  lines.push("");
+  lines.push(
+    "These are broader matches across the US that may also be relevant.",
+  );
+  lines.push("");
+
+  if (tier2Count === 0) {
+    lines.push(
+      "_No results in this tier. Try broadening your search keywords._",
+    );
+    lines.push("");
+  } else {
+    lines.push(renderDomainLists(results.tier2));
+  }
+
+  lines.push("---");
+  lines.push("");
+  lines.push(
+    `*Generated by [StartupScraper](https://github.com/Rocktopus101/StartupScraper) • ${prettyDate}*`,
+  );
+  lines.push("");
+
+  // ── Write to disk ────────────────────────────────────────────
+
+  const filename = `digest-${dateStr}.md`;
+  const filePath = join(outputDir, filename);
+  writeFileSync(filePath, lines.join("\n"), "utf-8");
+
+  console.log(`📝 Markdown digest saved to ${filePath}`);
+  return filePath;
+}
