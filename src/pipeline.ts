@@ -9,7 +9,7 @@ import { loadConfig, getEnv } from './config.js';
 import { buildQueries, formatQueryPreview } from './query-builder.js';
 import { executeQueries } from './serper-client.js';
 import { executeQueriesSearXNG } from './searxng-client.js';
-import { deduplicateJobs, loadSentJobs, markJobsAsSent } from './dedup.js';
+import { deduplicateJobs, loadSentJobs, markJobsAsSent, syncStateFromMarkdown, getPendingJobs } from './dedup.js';
 import type { TieredResults } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -44,6 +44,10 @@ export async function runPipeline(options: {
   // ── 1. Load configuration ───────────────────────────────────────────
   const config = loadConfig(options.configPath);
   console.log('✅ Configuration loaded');
+
+  // ── 1.5. Sync state from markdown ───────────────────────────────────
+  syncStateFromMarkdown(config.output.markdown_dir);
+  console.log('✅ Synced checkbox state from Markdown digests');
 
   // ── 2. Build search queries ─────────────────────────────────────────
   const queries = buildQueries(config);
@@ -83,22 +87,28 @@ export async function runPipeline(options: {
   }
   console.log(`🔍 Found ${rawJobs.length} total results`);
 
-  // ── 6. Deduplicate ──────────────────────────────────────────────────
+  // ── 6. Deduplicate & Merge Pending ──────────────────────────────────
   const sentJobs = loadSentJobs();
   const { newJobs, duplicatesRemoved } = deduplicateJobs(rawJobs, sentJobs);
+  const pendingJobs = getPendingJobs();
+  
+  // Combine new jobs and pending jobs for the final output
+  const activeJobs = [...newJobs, ...pendingJobs];
+
   console.log(
     `🔍 Dedup complete: ${newJobs.length} new, ${duplicatesRemoved} duplicates removed`,
   );
+  console.log(`📝 Rolling over ${pendingJobs.length} pending jobs from previous digests`);
 
-  // ── 7. Bail if no new jobs ──────────────────────────────────────────
-  if (newJobs.length === 0) {
-    console.log('⚠️  No new jobs found after deduplication — skipping output.');
+  // ── 7. Bail if no active jobs ───────────────────────────────────────
+  if (activeJobs.length === 0) {
+    console.log('⚠️  No new or pending jobs to show — skipping output.');
     return null;
   }
 
   // ── 8. Split into tiers & build result object ───────────────────────
-  const tier1 = newJobs.filter((j) => j.tier === 1);
-  const tier2 = newJobs.filter((j) => j.tier === 2);
+  const tier1 = activeJobs.filter((j) => j.tier === 1);
+  const tier2 = activeJobs.filter((j) => j.tier === 2);
 
   const results: TieredResults = {
     tier1,

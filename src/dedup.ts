@@ -139,6 +139,7 @@ export function deduplicateJobs(
 
 /**
  * Record the given jobs as sent so they won't appear in future digests.
+ * Initializes them with status: 'pending'.
  */
 export function markJobsAsSent(jobs: Job[]): void {
   const existing = loadSentJobs();
@@ -147,7 +148,66 @@ export function markJobsAsSent(jobs: Job[]): void {
     url: j.link,
     title: j.title,
     sentAt: new Date().toISOString(),
+    status: 'pending',
+    domain: j.domain,
+    tier: j.tier,
+    snippet: j.snippet,
+    position: j.position,
   }));
 
   saveSentJobs([...existing, ...newEntries]);
+}
+
+/**
+ * Scan all markdown digests in the output directory for checkboxes.
+ * Updates the status in sent-jobs.json (checked = 'checked', unchecked = 'pending').
+ */
+export function syncStateFromMarkdown(outputDir: string): void {
+  if (!fs.existsSync(outputDir)) return;
+  const files = fs.readdirSync(outputDir).filter(f => f.endsWith('.md'));
+  
+  const existing = loadSentJobs();
+  let changed = false;
+
+  for (const file of files) {
+    const content = fs.readFileSync(path.join(outputDir, file), 'utf-8');
+    // Regex matches: - [x] [Title](url) or - [ ] [Title](url)
+    const regex = /-\s*\[([ xX])\]\s+\[.*?\]\((.*?)\)/g;
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      const isChecked = match[1].toLowerCase() === 'x';
+      const url = normalizeUrl(match[2]);
+
+      const jobIndex = existing.findIndex(j => normalizeUrl(j.url) === url);
+      if (jobIndex !== -1) {
+        const newStatus = isChecked ? 'checked' : 'pending';
+        if (existing[jobIndex].status !== newStatus) {
+          existing[jobIndex].status = newStatus;
+          changed = true;
+        }
+      }
+    }
+  }
+
+  if (changed) {
+    saveSentJobs(existing);
+  }
+}
+
+/**
+ * Retrieve all jobs currently marked as 'pending'.
+ * Maps the internal SentJob format back to the standard Job format.
+ */
+export function getPendingJobs(): Job[] {
+  const existing = loadSentJobs();
+  return existing
+    .filter(j => j.status === 'pending')
+    .map(j => ({
+      title: j.title,
+      link: j.url,
+      snippet: j.snippet || '',
+      position: j.position || 0,
+      domain: j.domain || 'unknown',
+      tier: j.tier || 1,
+    }));
 }

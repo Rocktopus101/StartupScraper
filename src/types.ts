@@ -53,11 +53,15 @@ export interface SerperResponse {
   };
 }
 
-/** A previously-sent job stored in the dedup cache. */
 export interface SentJob {
   url: string;
   title: string;
   sentAt: string;
+  status: 'pending' | 'checked';
+  domain: string;
+  tier: 1 | 2;
+  snippet: string;
+  position: number;
 }
 
 /** Validated application configuration loaded from config.yaml. */
