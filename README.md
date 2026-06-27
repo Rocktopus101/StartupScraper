@@ -11,6 +11,7 @@ It's entirely free to run. It uses [SearXNG](https://github.com/searxng/searxng)
 * **Smart Deduplication**: Automatically tracks which jobs you've already seen. It saves state locally in `data/sent-jobs.json` so you never get pinged for the same job twice. Old records are auto-pruned after 30 days.
 * **Tiered Prioritization**: Groups results into Tier 1 (exact keyword + seniority + location match) and Tier 2 (broader keyword matches).
 * **Zero-Cost Scraping**: Uses a self-hosted SearXNG Docker container by default, completely bypassing Google API limits or rate-blocking.
+* **Interactive TODO Lists**: The generated markdown files use standard checkboxes. If you check off a job (`- [x]`), it never appears again. If you leave it unchecked (`- [ ]`), it automatically rolls over into your next daily digest!
 * **Tracking Stripper**: Automatically strips tracking parameters (`utm_source`, `gh_jid`, etc.) from URLs before deduplicating, preventing duplicate jobs that have different referral codes.
 
 ---
