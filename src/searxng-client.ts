@@ -56,6 +56,7 @@ function sleep(ms: number): Promise<void> {
 export async function searchSearXNG(
   query: string,
   baseUrl: string,
+  timeRange: 'day' | 'week' | 'month' | 'year' | 'all' = 'all',
   numResults: number = 10,
 ): Promise<SerperResult[]> {
   try {
@@ -66,6 +67,10 @@ export async function searchSearXNG(
       language: 'en',
       pageno: '1',
     });
+
+    if (timeRange !== 'all') {
+      params.append('time_range', timeRange);
+    }
 
     const url = `${baseUrl.replace(/\/+$/, '')}/search?${params.toString()}`;
 
@@ -124,6 +129,7 @@ export async function searchSearXNG(
 export async function executeQueriesSearXNG(
   queries: SearchQuery[],
   baseUrl: string,
+  timeRange: 'day' | 'week' | 'month' | 'year' | 'all',
   maxPerTier: number,
 ): Promise<Job[]> {
   const allJobs: Job[] = [];
@@ -135,7 +141,7 @@ export async function executeQueriesSearXNG(
       continue;
     }
 
-    const results = await searchSearXNG(sq.query, baseUrl);
+    const results = await searchSearXNG(sq.query, baseUrl, timeRange);
 
     console.log(
       `🔍 [Tier ${sq.tier}] Searching ${sq.domain}... found ${results.length} results`,

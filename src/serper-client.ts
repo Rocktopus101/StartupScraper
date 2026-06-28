@@ -33,21 +33,34 @@ function sleep(ms: number): Promise<void> {
 export async function searchSerper(
   query: string,
   apiKey: string,
+  timeRange: 'day' | 'week' | 'month' | 'year' | 'all' = 'all',
   numResults: number = 10,
 ): Promise<SerperResult[]> {
   try {
+    const payload: Record<string, any> = {
+      q: query,
+      gl: 'us',
+      hl: 'en',
+      num: numResults,
+    };
+
+    if (timeRange !== 'all') {
+      const map: Record<string, string> = {
+        day: 'qdr:d',
+        week: 'qdr:w',
+        month: 'qdr:m',
+        year: 'qdr:y',
+      };
+      payload.tbs = map[timeRange];
+    }
+
     const response = await fetch(SERPER_ENDPOINT, {
       method: 'POST',
       headers: {
         'X-API-KEY': apiKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        q: query,
-        gl: 'us',
-        hl: 'en',
-        num: numResults,
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -92,6 +105,7 @@ export async function searchSerper(
 export async function executeQueries(
   queries: SearchQuery[],
   apiKey: string,
+  timeRange: 'day' | 'week' | 'month' | 'year' | 'all',
   maxPerTier: number,
 ): Promise<Job[]> {
   const allJobs: Job[] = [];
@@ -105,7 +119,7 @@ export async function executeQueries(
       continue;
     }
 
-    const results = await searchSerper(sq.query, apiKey);
+    const results = await searchSerper(sq.query, apiKey, timeRange);
 
     console.log(
       `🔍 [Tier ${sq.tier}] Searching ${sq.domain}... found ${results.length} results`,

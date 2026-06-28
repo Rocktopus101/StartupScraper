@@ -11,6 +11,9 @@ search:
   # URL to your local SearXNG instance (used if engine is "searxng")
   searxng_url: "http://localhost:8080"
 
+  # Fetch recent postings only. Options: "day" (24h), "week", "month", "year", "all"
+  time_range: "day"
+
   # Job title keywords (combined with OR in search queries)
   keywords:
     - "Software Engineer"

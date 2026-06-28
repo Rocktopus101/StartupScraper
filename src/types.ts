@@ -74,6 +74,7 @@ export interface Config {
     locations: string[];
     excluded: string[];
     domains: string[];
+    time_range: 'day' | 'week' | 'month' | 'year' | 'all';
   };
   output: {
     mode: 'markdown' | 'email' | 'both';

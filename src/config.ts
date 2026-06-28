@@ -27,6 +27,7 @@ const ConfigSchema = z.object({
     locations: z.array(z.string()).default([]),
     excluded: z.array(z.string()).default([]),
     domains: z.array(z.string()).min(1, 'At least one ATS domain is required'),
+    time_range: z.enum(['day', 'week', 'month', 'year', 'all']).default('all'),
   }),
   output: z.object({
     mode: z.enum(['markdown', 'email', 'both']).default('markdown'),

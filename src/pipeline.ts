@@ -76,12 +76,14 @@ export async function runPipeline(options: {
     rawJobs = await executeQueriesSearXNG(
       queries,
       config.search.searxng_url,
+      config.search.time_range,
       config.tiers.max_results_per_tier,
     );
   } else {
     rawJobs = await executeQueries(
       queries,
       env.serperApiKey!,
+      config.search.time_range,
       config.tiers.max_results_per_tier,
     );
   }
