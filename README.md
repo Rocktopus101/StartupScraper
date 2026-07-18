@@ -29,6 +29,9 @@ npm install
 
 ### 2. Run the Scraper
 ```bash
+# Compiles the Typescript code into Javascript for Node to run (/dist)
+npx tsc
+
 # This automatically starts Docker, runs the scraper, saves the markdown file, and stops Docker.
 npm run scrape
 ```
